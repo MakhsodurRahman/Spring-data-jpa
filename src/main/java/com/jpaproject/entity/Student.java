@@ -11,13 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-//@ToString(exclude = "courses")
-//@DynamicUpdate
-//@NamedEntityGraphs({
-//        @NamedEntityGraph(name = "studentWithCourse",attributeNodes = @NamedAttributeNode("courses"))
-//}) if use dynamic graph on runtime not use that
 public class Student {
 
     @Id
@@ -27,10 +21,28 @@ public class Student {
     private String name;
     private double cgpa;
 
-//    @OneToOne(targetEntity = Address.class)
-//    @JoinColumn(name = "address_identifiers",referencedColumnName = "aid",foreignKey = @ForeignKey(name = "FK_student_id",value = ConstraintMode.NO_CONSTRAINT))
-//    private Address address;
+   //@OneToOne(cascade = {CascadeType.PERSIST})
+   /*
+   @OneToOne(cascade = {CascadeType.PERSIST})
+   when use this when save student object this time save course object,
+    if not found course object in db
+    @JoinColumn(foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    if not use foreign key constraint use this code
 
-   @OneToOne
+    @OneToOne(optional = false)
+    when use this course must be not null when insert student
+
+
+    @OneToOne(optional = false,cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    when use CasecadeType.REMOVE -> when delete student in this time delete course when OneToOne relation
+    but if i delete student using sql query not delete course.
+    */
+   @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE},orphanRemoval = true)
     private Course course;
+
+    public Student(String name, double cgpa, Course course) {
+        this.name = name;
+        this.cgpa = cgpa;
+        this.course = course;
+    }
 }
