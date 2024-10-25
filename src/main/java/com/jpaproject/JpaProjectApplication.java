@@ -1,5 +1,7 @@
 package com.jpaproject;
 
+import com.jpaproject.entity.Card;
+import com.jpaproject.entity.CardItem;
 import com.jpaproject.entity.Course;
 import com.jpaproject.entity.Student;
 import jakarta.persistence.EntityManager;
@@ -8,6 +10,7 @@ import jakarta.persistence.Persistence;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 
@@ -31,15 +34,29 @@ public class JpaProjectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(JpaProjectApplication.class, args);
 
+
 		transactional(em->{
 
 			//insert(em);
 
-			var s = em.find(Student.class,5);
-			System.out.println(s.getCourse());
-			s.setCourse(null);
-			em.remove(s);
+//			var s = em.find(Student.class,5);
+//			System.out.println(s.getCourse());
+//			s.setCourse(null);
+//			em.remove(s);
+
+		var i1 = new CardItem("HP Laptop");
+		var i2 = new CardItem("iPhone 16");
+		var i3 = new CardItem("samsung monitor");
+
+		var card = new Card("mak", List.of(i1,i2,i3));
+		em.persist(card);
+
+		var cart = em.find(Card.class,1);
+		cart.getCardItems().remove(1);
 		});
+
+
+
 
 	}
 
