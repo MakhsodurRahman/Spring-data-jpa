@@ -43,16 +43,29 @@ public class JpaProjectApplication {
 //			System.out.println(s.getCourse());
 //			s.setCourse(null);
 //			em.remove(s);
-
+/*
 		var i1 = new CardItem("HP Laptop");
 		var i2 = new CardItem("iPhone 16");
 		var i3 = new CardItem("samsung monitor");
 
 		var card = new Card("mak", List.of(i1,i2,i3));
 		em.persist(card);
+*/
 
-		var cart = em.find(Card.class,1);
-		cart.getCardItems().remove(1);
+
+
+			var cart = em.find(Card.class,3);
+			em.detach(cart);
+			System.out.println(cart.toString());
+			cart.setUserName("yyy");
+			cart.getCardItems().get(0).setName("yyyy");
+
+			System.out.println(cart.toString());
+			em.merge(cart);
+			System.out.println(cart.toString());
+
+
+
 		});
 
 

@@ -3,11 +3,15 @@ package com.jpaproject.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Entity
+@Setter
+@ToString
 @NoArgsConstructor
 public class Card {
 
@@ -17,7 +21,7 @@ public class Card {
 
     private String userName;
 
-    @OneToMany(cascade = CascadeType.PERSIST,orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST,CascadeType.DETACH,CascadeType.REMOVE,CascadeType.REFRESH,CascadeType.MERGE},orphanRemoval = true)
     private List<CardItem> cardItems;
 
     public Card(String userName, List<CardItem> cardItems) {
