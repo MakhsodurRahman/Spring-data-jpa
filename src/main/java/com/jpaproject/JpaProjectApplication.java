@@ -1,90 +1,200 @@
 package com.jpaproject;
 
-import com.jpaproject.entity.Card;
-import com.jpaproject.entity.CardItem;
-import com.jpaproject.entity.Course;
+
 import com.jpaproject.entity.Student;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import jakarta.persistence.*;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+class MakDataSource implements DataSource{
+
+	@Override
+	public Connection getConnection() throws SQLException {
+		Connection connection = DriverManager.getConnection(
+				"jdbc:sqlserver://localhost:1433;databaseName=quiz_app;encrypt=true;trustServerCertificate=true;",
+				"sa",
+				"Makhsodur123"
+		);
+		return connection;
+	}
+
+	@Override
+	public Connection getConnection(String username, String password) throws SQLException {
+		return null;
+	}
+
+	@Override
+	public PrintWriter getLogWriter() throws SQLException {
+		return null;
+	}
+
+	@Override
+	public void setLogWriter(PrintWriter out) throws SQLException {
+
+	}
+
+	@Override
+	public void setLoginTimeout(int seconds) throws SQLException {
+
+	}
+
+	@Override
+	public int getLoginTimeout() throws SQLException {
+		return 0;
+	}
+
+	@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		return null;
+	}
+
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		return null;
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return false;
+	}
+}
+
+class MakUnitInfo implements PersistenceUnitInfo {
+
+	@Override
+	public String getPersistenceUnitName() {
+		return "default";
+	}
 
 
-@SpringBootApplication
+
+	@Override
+	public String getPersistenceProviderClassName() {
+		return "org.hibernate.jpa.HibernatePersistenceProvider";
+	}
+
+	@Override
+	public PersistenceUnitTransactionType getTransactionType() {
+		return PersistenceUnitTransactionType.RESOURCE_LOCAL;
+	}
+
+	@Override
+	public DataSource getJtaDataSource() {
+		return  null;
+//		return DataSourceBuilder.create()
+//				.url("")
+//				.username("")
+//				.password("")
+//				.driverClassName("")
+//				.build();
+
+	}
+
+	@Override
+	public DataSource getNonJtaDataSource() {
+		return new MakDataSource();
+	}
+
+	@Override
+	public List<String> getMappingFileNames() {
+		return null;
+	}
+
+	@Override
+	public List<URL> getJarFileUrls() {
+		return null;
+	}
+
+	@Override
+	public URL getPersistenceUnitRootUrl() {
+		return null;
+	}
+
+	@Override
+	public List<String> getManagedClassNames() {
+		return List.of(
+				"com.jpaproject.entity.Student"
+		);
+	}
+
+	@Override
+	public boolean excludeUnlistedClasses() {
+		return false;
+	}
+
+	@Override
+	public SharedCacheMode getSharedCacheMode() {
+		return null;
+	}
+
+	@Override
+	public ValidationMode getValidationMode() {
+		return null;
+	}
+
+	@Override
+	public Properties getProperties() {
+		Properties props = new Properties();
+		props.setProperty("hibernate.hbm2ddl.auto","update");
+		props.setProperty("hibernate.format_sql","true");
+		props.setProperty("hibernate.show_sql","true");
+		return props;
+	}
+
+	@Override
+	public String getPersistenceXMLSchemaVersion() {
+		return null;
+	}
+
+	@Override
+	public ClassLoader getClassLoader() {
+		return null;
+	}
+
+	@Override
+	public void addTransformer(ClassTransformer classTransformer) {
+
+	}
+
+	@Override
+	public ClassLoader getNewTempClassLoader() {
+		return null;
+	}
+}
+//@SpringBootApplication
 public class JpaProjectApplication {
-
-	public static final EntityManagerFactory fectory = Persistence.createEntityManagerFactory("sql-server-unit");
-	public static final EntityManager em = fectory.createEntityManager();
-
-	static void insert(EntityManager em){
-		Course course = new Course("101","Alog");
-		//if not save course can't save student in db if not use casecade
-		Student student = new Student("mak",3.4,course);
-		em.persist(student);
-	}
-
-	static void remove(EntityManager em,Object object){
-		em.remove(object);
-	}
-
 	public static void main(String[] args) {
-		SpringApplication.run(JpaProjectApplication.class, args);
+		//SpringApplication.run(JpaProjectApplication.class,args);
 
 
-		transactional(em->{
+		PersistenceUnitInfo info = new MakUnitInfo();
+		PersistenceProvider provider = new HibernatePersistenceProvider();
 
-			//insert(em);
+		EntityManagerFactory factory = provider.createContainerEntityManagerFactory(info, Map.of());
+		EntityManager em = factory.createEntityManager();
 
-//			var s = em.find(Student.class,5);
-//			System.out.println(s.getCourse());
-//			s.setCourse(null);
-//			em.remove(s);
-/*
-		var i1 = new CardItem("HP Laptop");
-		var i2 = new CardItem("iPhone 16");
-		var i3 = new CardItem("samsung monitor");
-
-		var card = new Card("mak", List.of(i1,i2,i3));
-		em.persist(card);
-*/
-
-
-
-			var cart = em.find(Card.class,3);
-			em.detach(cart);
-			System.out.println(cart.toString());
-			cart.setUserName("yyy");
-			cart.getCardItems().get(0).setName("yyyy");
-
-			System.out.println(cart.toString());
-			em.merge(cart);
-			System.out.println(cart.toString());
-
-
-
-		});
-
-
+		em.getTransaction().begin();
+		Student student = new Student("mak",3.44);
+		em.persist(student);
+		em.getTransaction().commit();
 
 
 	}
-
-	public static void transactional(Consumer<EntityManager> consumer){
-		em.getTransaction().begin();// before advice
-		try{
-			consumer.accept(em);
-		}catch (Exception e){
-			em.getTransaction().rollback();// after throwing
-			throw new RuntimeException("Can't save the object");
-		}
-		em.getTransaction().commit();// after advice
-
-	}
-
 }
 
 

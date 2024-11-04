@@ -37,12 +37,12 @@ public class Student {
     when use CasecadeType.REMOVE -> when delete student in this time delete course when OneToOne relation
     but if i delete student using sql query not delete course.
     */
-   @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE},orphanRemoval = true)
-    private Course course;
+//   @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE},orphanRemoval = true)
+//    private Course course;
 
-    public Student(String name, double cgpa, Course course) {
+    public Student(String name, double cgpa) {
         this.name = name;
         this.cgpa = cgpa;
-        this.course = course;
+
     }
 }
