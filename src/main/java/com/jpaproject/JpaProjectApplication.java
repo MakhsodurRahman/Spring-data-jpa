@@ -2,12 +2,21 @@ package com.jpaproject;
 
 
 import com.jpaproject.entity.Student;
+import com.jpaproject.repository.SqlServerStudentRepository;
 import jakarta.persistence.*;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -176,12 +185,22 @@ class MakUnitInfo implements PersistenceUnitInfo {
 		return null;
 	}
 }
-//@SpringBootApplication
-public class JpaProjectApplication {
+@SpringBootApplication(
+		exclude = {
+				DataSourceAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class,
+				TransactionAutoConfiguration.class,
+				JpaRepositoriesAutoConfiguration.class
+		}
+)
+public class JpaProjectApplication implements CommandLineRunner {
+
+	@Autowired
+	private SqlServerStudentRepository repository;
 	public static void main(String[] args) {
-		//SpringApplication.run(JpaProjectApplication.class,args);
+		SpringApplication.run(JpaProjectApplication.class,args);
 
-
+/*
 		PersistenceUnitInfo info = new MakUnitInfo();
 		PersistenceProvider provider = new HibernatePersistenceProvider();
 
@@ -194,6 +213,17 @@ public class JpaProjectApplication {
 		em.getTransaction().commit();
 
 
+
+ */
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		List<Student> findAll = repository.findAll();
+		findAll.forEach(System.out::println);
+
+		var s = new Student("asdkfjasdkjf",4.44);
+		repository.save(s);
 	}
 }
 
