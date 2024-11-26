@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jca.support.LocalConnectionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -18,6 +19,11 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
+@EnableJpaRepositories(
+        basePackages = "com.jpaproject.repository",
+        entityManagerFactoryRef = "sqlServerEntityManagerFactory",
+        transactionManagerRef = "sqlServerTransactionManager"
+)
 public class SqlServerDatabaseConfig {
 
     @Bean
@@ -26,28 +32,28 @@ public class SqlServerDatabaseConfig {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean
+    @Bean(name = "sqlServerEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean sqlServerEntityManagerFactory(){
-        var fectory = new LocalContainerEntityManagerFactoryBean();
-        fectory.setPersistenceUnitName("sql-server-unit");
-        fectory.setDataSource(sqlServerDataSource());
-        fectory.setPackagesToScan("com.jpaproject.entity");
+        var factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setPersistenceUnitName("sql-server-unit");
+        factory.setDataSource(sqlServerDataSource());
+        factory.setPackagesToScan("com.jpaproject.entity");
 
         var adapter = new HibernateJpaVendorAdapter();
         adapter.setShowSql(true);
 
-        fectory.setJpaVendorAdapter(adapter);
+        factory.setJpaVendorAdapter(adapter);
         Properties props = new Properties();
         props.setProperty("hibernate.hbm2ddl.auto","update");
         props.setProperty("hibernate.format_sql","true");
         props.setProperty("hibernate.show_sql","true");
 
-        fectory.setJpaProperties(props);
-        return fectory;
+        factory.setJpaProperties(props);
+        return factory;
     }
 
 
-    @Bean
+    @Bean(name = "sqlServerTransactionManager")
     public PlatformTransactionManager sqlServerTransactionManager(EntityManagerFactory sqlServerEntityManagerFactory){
         var manager = new JpaTransactionManager();
         manager.setEntityManagerFactory(sqlServerEntityManagerFactory);
