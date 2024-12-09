@@ -6,7 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.jca.support.LocalConnectionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -22,9 +24,12 @@ import java.util.Properties;
 @EnableJpaRepositories(
         basePackages = "com.jpaproject.repository",
         entityManagerFactoryRef = "sqlServerEntityManagerFactory",
-        transactionManagerRef = "sqlServerTransactionManager"
+        transactionManagerRef = "sqlServerTransactionManager",
+        queryLookupStrategy = QueryLookupStrategy.Key.CREATE
 )
 public class SqlServerDatabaseConfig {
+
+
 
     @Bean
     @ConfigurationProperties(prefix = "sqlserver.datasource")

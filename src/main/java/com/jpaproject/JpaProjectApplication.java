@@ -3,6 +3,7 @@ package com.jpaproject;
 
 import com.jpaproject.entity.Student;
 import com.jpaproject.repository.SqlServerStudentRepository;
+import com.jpaproject.repository.impl.ProductRepo;
 import jakarta.persistence.*;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceProvider;
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -193,10 +195,14 @@ class MakUnitInfo implements PersistenceUnitInfo {
 				JpaRepositoriesAutoConfiguration.class
 		}
 )
+@Transactional(readOnly = true)
 public class JpaProjectApplication implements CommandLineRunner {
 
 	@Autowired
 	private SqlServerStudentRepository repository;
+
+	@Autowired
+	private ProductRepo productRepo;
 	public static void main(String[] args) {
 		SpringApplication.run(JpaProjectApplication.class,args);
 
@@ -218,12 +224,22 @@ public class JpaProjectApplication implements CommandLineRunner {
 	}
 
 	@Override
+	@Transactional
 	public void run(String... args) throws Exception {
 		List<Student> findAll = repository.findAll();
 		findAll.forEach(System.out::println);
 
 		var s = new Student("asdkfjasdkjf",4.44);
 		repository.save(s);
+//
+//		productRepo.findAllByNameLike("Phone")
+//				.and(productRepo.findAllByCategory_name("I_PHONE"))
+//				.forEach(System.out::println);
+
+		try(var stream = productRepo.findAllByCategory_name("I_PHONE")) {
+			stream.skip(0)
+					.forEach(System.out::println);
+		}
 	}
 }
 
