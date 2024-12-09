@@ -1,6 +1,7 @@
 package com.jpaproject;
 
 
+import com.jpaproject.entity.Product;
 import com.jpaproject.entity.Student;
 import com.jpaproject.repository.SqlServerStudentRepository;
 import com.jpaproject.repository.impl.ProductRepo;
@@ -18,6 +19,7 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
@@ -27,9 +29,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 
 class MakDataSource implements DataSource{
@@ -226,20 +226,47 @@ public class JpaProjectApplication implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-		List<Student> findAll = repository.findAll();
-		findAll.forEach(System.out::println);
+//		List<Student> findAll = repository.findAll();
+//		findAll.forEach(System.out::println);
 
-		var s = new Student("asdkfjasdkjf",4.44);
-		repository.save(s);
+//		var s = new Student("asdkfjasdkjf",4.44);
+//		repository.save(s);
+//
+//		List<Product> products = new ArrayList<>();
+//		Random random = new Random();
+//		for (int i = 0; i < 1000; i++) {
+//			Product product = new Product();
+//			product.setName("Product " + i);
+//			product.setPrice((long) (random.nextInt(1000) + 100)); // Random price between 100 and 1100
+//			products.add(product);
+//		}
+//
+//		productRepo.saveAll(products);
 //
 //		productRepo.findAllByNameLike("Phone")
 //				.and(productRepo.findAllByCategory_name("I_PHONE"))
 //				.forEach(System.out::println);
 
-		try(var stream = productRepo.findAllByCategory_name("I_PHONE")) {
-			stream.skip(0)
-					.forEach(System.out::println);
-		}
+//		try(var stream = productRepo.findAllByCategory_name("I_PHONE")) {
+//			stream.skip(0)
+//					.forEach(System.out::println);
+//		}
+
+		Sort.TypedSort<Product> typedSort = (Sort.TypedSort<Product>) Sort.sort(Product.class).by(Product::getId).ascending();
+		Sort.TypedSort<Product> sort = Sort.sort(Product.class);
+		Sort sort1 = sort.by(Product::getId).descending();
+		Sort sort2 = Sort.by("id").descending().and(Sort.by("name")).descending();
+		Sort sort3 = Sort.by(Sort.Direction.ASC,"id","name");
+		Sort sort4 = Sort.by(Sort.Order.by("id"));
+
+		Pageable pageable = PageRequest.of(2,10, Sort.Direction.ASC,"id");
+		//Page<Product> page = productRepo.findAllByCategory_name("I_PHONE", pageable);
+		//System.out.println(page);
+
+
+		// use limit sort individual
+		Limit limit = Limit.of(10);
+		List<Product> products = productRepo.findAllByCategory_name("I_PHONE",limit,sort2);
 	}
 }
 

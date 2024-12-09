@@ -1,10 +1,12 @@
 package com.jpaproject.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.ToString;
 
 @Entity
 @ToString
+@Data
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
