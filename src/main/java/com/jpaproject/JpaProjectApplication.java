@@ -251,7 +251,7 @@ public class JpaProjectApplication implements CommandLineRunner {
 //			stream.skip(0)
 //					.forEach(System.out::println);
 //		}
-
+/*
 		Sort.TypedSort<Product> typedSort = (Sort.TypedSort<Product>) Sort.sort(Product.class).by(Product::getId).ascending();
 		Sort.TypedSort<Product> sort = Sort.sort(Product.class);
 		Sort sort1 = sort.by(Product::getId).descending();
@@ -267,6 +267,21 @@ public class JpaProjectApplication implements CommandLineRunner {
 		// use limit sort individual
 		Limit limit = Limit.of(10);
 		List<Product> products = productRepo.findAllByCategory_name("I_PHONE",limit,sort2);
+
+ */
+
+		//var position = ScrollPosition.offset();
+		//
+		// var position = ScrollPosition.offset(10);// use this
+		//var position = ScrollPosition.keyset();// if use this working on primary key
+		var position = ScrollPosition.forward(Map.of("id","24","price","1000"));
+		var sort = Sort.by(Sort.Direction.ASC,"price");
+		var window = productRepo.findProductsByCategory_NameInOrderById(List.of("I_PHONE","S_PHONE"),position,Limit.of(10),sort);
+		window.forEach(System.out::println);
+
+		System.out.println("---------------------------------------------");
+		var window2 = productRepo.findProductsByCategory_NameInOrderById(List.of("I_PHONE","S_PHONE"),window.positionAt(window.size() - 1),Limit.of(10),sort);
+		window2.forEach(System.out::println);
 	}
 }
 
