@@ -2,6 +2,7 @@ package com.jpaproject.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 
@@ -14,6 +15,7 @@ import lombok.ToString;
 @Entity
 @ToString
 @Data
+@NoArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +30,9 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    // Getters and setters
+    public Product(Long id, String categoryName, String name) {
+        this.id = id;
+        this.categoryName = categoryName;
+        this.name = name;
+    }
 }

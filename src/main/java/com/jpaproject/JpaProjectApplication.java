@@ -268,8 +268,6 @@ public class JpaProjectApplication implements CommandLineRunner {
 		Limit limit = Limit.of(10);
 		List<Product> products = productRepo.findAllByCategory_name("I_PHONE",limit,sort2);
 
- */
-
 		//var position = ScrollPosition.offset();
 		//
 		// var position = ScrollPosition.offset(10);// use this
@@ -282,6 +280,39 @@ public class JpaProjectApplication implements CommandLineRunner {
 		System.out.println("---------------------------------------------");
 		var window2 = productRepo.findProductsByCategory_NameInOrderById(List.of("I_PHONE","S_PHONE"),window.positionAt(window.size() - 1),Limit.of(10),sort);
 		window2.forEach(System.out::println);
+
+
+
+		List<Object[]> results = productRepo.findProductNameAndPriceById(1);
+		var list = productRepo.findProductsByCategory_Name("I_PHONE");
+		list.forEach(objects -> System.out.println(Arrays.toString(objects)));
+		var map = productRepo.findProductById(2);
+		System.out.println(map.get("id") +" "+ map.get("name")+ map.get("categoryName"));
+
+
+
+		var tuple = productRepo.findProductById(2);
+		Long id = tuple.get("product_id",Long.class);
+		String name = tuple.get("name",String.class);
+		Long price = tuple.get(2,Long.class);
+		System.out.println(id+"   -> "+name);
+
+		var dto = productRepo.findProductById(2);
+		System.out.println(dto);
+
+
+		var page = productRepo.findProductsByCategoryName("I_PHONE",PageRequest.of(1,20));
+		page.getContent().forEach(System.out::println);
+
+
+ */
+ 	var product = productRepo.findProductById(1);
+	 product.setName("newName");
+		System.out.println(product);
+
+
+
+
 	}
 }
 

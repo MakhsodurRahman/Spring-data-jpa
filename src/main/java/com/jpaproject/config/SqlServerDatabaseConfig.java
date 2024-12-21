@@ -24,8 +24,8 @@ import java.util.Properties;
 @EnableJpaRepositories(
         basePackages = "com.jpaproject.repository",
         entityManagerFactoryRef = "sqlServerEntityManagerFactory",
-        transactionManagerRef = "sqlServerTransactionManager",
-        queryLookupStrategy = QueryLookupStrategy.Key.CREATE
+        transactionManagerRef = "sqlServerTransactionManager"
+        //queryLookupStrategy = QueryLookupStrategy.Key.CREATE
 )
 public class SqlServerDatabaseConfig {
 
