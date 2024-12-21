@@ -4,6 +4,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+
+@Table(
+        indexes = {
+                @Index(name = "price_index",columnList = "price"),
+                @Index(name = "id_and_price_index",columnList = "id"),
+        }
+)
 @Entity
 @ToString
 @Data
