@@ -1,8 +1,7 @@
 package com.jpaproject.dto;
 
-import lombok.ToString;
-
-public record ProductNamePriceDto(
+public record ProductIdNamePriceDto(
+        int id,
         String name,
         Long price
 ) {

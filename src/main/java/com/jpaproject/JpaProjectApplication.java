@@ -1,6 +1,7 @@
 package com.jpaproject;
 
 
+import com.jpaproject.dto.ProductNamePriceDto;
 import com.jpaproject.entity.Product;
 import com.jpaproject.entity.Student;
 import com.jpaproject.repository.SqlServerStudentRepository;
@@ -305,11 +306,15 @@ public class JpaProjectApplication implements CommandLineRunner {
 		page.getContent().forEach(System.out::println);
 
 
- */
  	var product = productRepo.findProductById(1);
 	 product.setName("newName");
 		System.out.println(product);
 
+
+ */
+
+		ProductNamePriceDto data = productRepo.findProductNameAndPriceById(1);
+		System.out.println(data);
 
 
 

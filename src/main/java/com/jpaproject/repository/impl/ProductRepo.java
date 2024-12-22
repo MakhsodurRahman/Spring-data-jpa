@@ -1,5 +1,6 @@
 package com.jpaproject.repository.impl;
 
+import com.jpaproject.dto.ProductDto;
 import com.jpaproject.dto.ProductNamePriceDto;
 import com.jpaproject.entity.Product;
 import jakarta.persistence.Tuple;
@@ -32,10 +33,10 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
 
     Window<Product> findProductsByCategory_NameInOrderById(List<String> categories,ScrollPosition position,Limit limit,Sort sort);
 
-    @Query("SELECT p.name, p.price FROM Product p WHERE p.id = :category")
-    List<Object[]> findProductNameAndPriceById(@Param("category") int id);
+//    @Query("SELECT p.name, p.price FROM Product p WHERE p.id = :category")
+//    List<Object[]> findProductNameAndPriceById(@Param("category") int id);
 
-    List<Object[]> findProductsByCategory_Name(String categoryName);
+//    List<Object[]> findProductsByCategory_Name(String categoryName);
     /*
 
     @Query("select p.id,p.name,p.price  from Product p where p.id = :id")
@@ -68,10 +69,19 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
     @Query("select new com.jpaproject.dto.ProductNamePriceDto(p.name ,p.price,p.category.name) from Product p where p.category.name = ?1")
     Page<ProductNamePriceDto> findProductsByCategoryName(String name,Pageable pageable);
 
-     */
+
     //@Query("select new Product(p.id,p.categoryName,p.name) from Product p where p.id = ?1")
    // when use this type of projection and if change any value of service method and this method use transactional annotation change will be update
     Product findProductById(Integer id);
+
+     */
+
+    @Query("select new com.jpaproject.dto.ProductDto(p.id,p.name,p.price,p.categoryName) from Product p where p.id = ?1")
+    ProductDto findProductAllInfoById(Integer id);
+
+
+    @Query("select new com.jpaproject.dto.ProductNamePriceDto(p.name,p.price) from Product p where p.id = ?1")
+    ProductNamePriceDto findProductNameAndPriceById(Integer id);
 
 
 
