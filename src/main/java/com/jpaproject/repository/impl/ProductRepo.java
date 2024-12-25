@@ -1,11 +1,15 @@
 package com.jpaproject.repository.impl;
 
+import com.jpaproject.dto.CategoryName;
 import com.jpaproject.dto.ProductDto;
 import com.jpaproject.dto.ProductNamePriceDto;
 import com.jpaproject.entity.Product;
+import com.jpaproject.projection.ProductIdNamePriceProjection;
+import com.jpaproject.projection.ProductNamePriceCategoryProjection;
 import jakarta.persistence.Tuple;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.util.Streamable;
@@ -19,7 +23,7 @@ import java.util.stream.Stream;
 
 
 @Repository
-public interface ProductRepo extends JpaRepository<Product,Long> {
+public interface ProductRepo extends JpaRepository<Product,Long>, JpaSpecificationExecutor<Product> {
 
     //Streamable<Product> findAllByNameLike(String name);
     //Streamable<Product> findAllByCategory_name(String cegetoryName);
@@ -74,7 +78,6 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
    // when use this type of projection and if change any value of service method and this method use transactional annotation change will be update
     Product findProductById(Integer id);
 
-     */
 
     @Query("select new com.jpaproject.dto.ProductDto(p.id,p.name,p.price,p.categoryName) from Product p where p.id = ?1")
     ProductDto findProductAllInfoById(Integer id);
@@ -82,6 +85,28 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
 
     @Query("select new com.jpaproject.dto.ProductNamePriceDto(p.name,p.price) from Product p where p.id = ?1")
     ProductNamePriceDto findProductNameAndPriceById(Integer id);
+
+
+
+// this is close projection
+
+   // ProductIdNamePriceProjection findProductById(Integer id);
+
+    @Query("select p.id as product_id,p.name as name, p.price as price from Product p where p.id = ?1")
+    ProductIdNamePriceProjection findProductById(Integer id);
+
+     */
+
+    //@Query("select p.id as product_id,p.name as name, p.price as price from Product p where p.id = ?1")
+   // ProductNamePriceCategoryProjection findProductById(Integer id);
+
+    @Query("select p.name as proName, p.price as price,p.category as category from Product p where p.id = ?1")
+     ProductNamePriceCategoryProjection findProductById(Integer id);
+
+    @Query("select new com.jpaproject.dto.CategoryName(c.name) from Category c where c.id = :id")
+    List<CategoryName> findCategoryById(@Param("id") Long id);
+
+
 
 
 

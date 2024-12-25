@@ -1,17 +1,16 @@
 package com.jpaproject;
 
-
-import com.jpaproject.dto.ProductNamePriceDto;
 import com.jpaproject.entity.Product;
-import com.jpaproject.entity.Student;
 import com.jpaproject.repository.SqlServerStudentRepository;
 import com.jpaproject.repository.impl.ProductRepo;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
-import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +19,7 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
-import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
@@ -311,12 +310,24 @@ public class JpaProjectApplication implements CommandLineRunner {
 		System.out.println(product);
 
 
- */
+ *
 
 		ProductNamePriceDto data = productRepo.findProductNameAndPriceById(1);
 		System.out.println(data);
 
 
+		var projection = productRepo.findProductById(1);
+		System.out.println(projection.getCategory().getName());
+
+		var c = productRepo.findCategoryById(1L);
+		System.out.println(c);
+
+ */
+
+		List<Product> id = productRepo.findAll((Specification<Product>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), 1));
+		Optional<Product> productRepoOne = productRepo.findOne((Specification<Product>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), 1));
+		System.out.println(id.get(0));
+		System.out.println(productRepoOne);
 
 	}
 }
