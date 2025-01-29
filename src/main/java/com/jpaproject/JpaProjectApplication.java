@@ -1,8 +1,11 @@
 package com.jpaproject;
 
+import com.jpaproject.entity.Category;
 import com.jpaproject.entity.Product;
+import com.jpaproject.entity.Product_;
 import com.jpaproject.repository.SqlServerStudentRepository;
 import com.jpaproject.repository.impl.ProductRepo;
+import com.jpaproject.specification.ProductSpecification;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -19,6 +22,10 @@ import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfig
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -322,12 +329,45 @@ public class JpaProjectApplication implements CommandLineRunner {
 		var c = productRepo.findCategoryById(1L);
 		System.out.println(c);
 
- */
-
 		List<Product> id = productRepo.findAll((Specification<Product>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), 1));
 		Optional<Product> productRepoOne = productRepo.findOne((Specification<Product>) (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("id"), 1));
 		System.out.println(id.get(0));
 		System.out.println(productRepoOne);
+
+
+
+		Specification<Product> specification = Specification.where(
+				ProductSpecification.byCategoryName(Set.of("LAPTOP"))
+						.and(ProductSpecification.byPriceRange(1000.00,116000.00))
+		);
+
+		Page<Product> productPage = productRepo.findAll(specification, PageRequest.of(1,20));
+		productPage.forEach(System.out::println);
+
+
+ */
+
+		Product exampleProduct = new Product();
+		exampleProduct.setId(1L);
+
+		Product product = productRepo.findOne(Example.of(exampleProduct)).get();
+		List<Product> productList = productRepo.findAll(Example.of(exampleProduct),PageRequest.of(1,10)).getContent();
+		System.out.println("product -> " 	+ product);
+
+		Category category = new Category();
+		category.setName("I_PHONE");
+
+		Product product1 = new Product();
+		product1.setId(10L);
+		product1.setCategory(category);
+		var example = Example.of(product1,ExampleMatcher.matchingAll().withIgnorePaths(Product_.NAME));
+		/*
+			ExampleMatcher.matchingAll().withIgnoreAll()-> AND operation
+			.matchingAny() -> OR operation
+
+			.
+		 */
+		 var list = productRepo.findAll(example);
 
 	}
 }
