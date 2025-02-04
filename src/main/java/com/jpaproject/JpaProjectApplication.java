@@ -1,11 +1,14 @@
 package com.jpaproject;
 
-import com.jpaproject.entity.Category;
-import com.jpaproject.entity.Product;
-import com.jpaproject.entity.Product_;
+import com.jpaproject.dto.InvoiceDescItem;
+import com.jpaproject.dto.InvoiceInfo;
+import com.jpaproject.entity.*;
+import com.jpaproject.repository.AppUserRepository;
+import com.jpaproject.repository.OrderRepository;
 import com.jpaproject.repository.SqlServerStudentRepository;
 import com.jpaproject.repository.impl.ProductRepo;
 import com.jpaproject.specification.ProductSpecification;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -27,7 +30,13 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -194,6 +203,7 @@ class MakUnitInfo implements PersistenceUnitInfo {
 		return null;
 	}
 }
+@EnableAsync
 @SpringBootApplication(
 		exclude = {
 				DataSourceAutoConfiguration.class,
@@ -202,7 +212,7 @@ class MakUnitInfo implements PersistenceUnitInfo {
 				JpaRepositoriesAutoConfiguration.class
 		}
 )
-@Transactional(readOnly = true)
+
 public class JpaProjectApplication implements CommandLineRunner {
 
 	@Autowired
@@ -210,6 +220,18 @@ public class JpaProjectApplication implements CommandLineRunner {
 
 	@Autowired
 	private ProductRepo productRepo;
+
+	@Autowired
+	private AppUserRepository appUserRepository;
+
+	@Autowired
+	private OrderRepository orderRepository;
+
+	@Autowired
+	private TemplateEngine templateEngine;
+
+	@Autowired
+	private JavaMailSender mailSender;
 	public static void main(String[] args) {
 		SpringApplication.run(JpaProjectApplication.class,args);
 
@@ -231,7 +253,7 @@ public class JpaProjectApplication implements CommandLineRunner {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
 	public void run(String... args) throws Exception {
 //		List<Student> findAll = repository.findAll();
 //		findAll.forEach(System.out::println);
@@ -345,8 +367,6 @@ public class JpaProjectApplication implements CommandLineRunner {
 		productPage.forEach(System.out::println);
 
 
- */
-
 		Product exampleProduct = new Product();
 		exampleProduct.setId(1L);
 
@@ -366,10 +386,29 @@ public class JpaProjectApplication implements CommandLineRunner {
 			.matchingAny() -> OR operation
 
 			.
-		 */
+
 		 var list = productRepo.findAll(example);
 
+
+
+		var appUser = new AppUser("mak","mak@gmail.com","dhaka");
+		appUserRepository.save(appUser);
+
+		var orders = new Orders(appUser,List.of(
+				new OrderItem(new Product(1L),2),
+				new OrderItem(new Product(2),20),
+				new OrderItem(new Product(3),30)
+		));
+
+		orderRepository.save(orders);
+
+		 */
+
+
+
 	}
+
+
 }
 
 

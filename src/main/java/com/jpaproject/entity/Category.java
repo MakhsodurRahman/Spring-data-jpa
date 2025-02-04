@@ -13,7 +13,7 @@ public class Category {
 
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Product> products;
 
     // Getters and setters

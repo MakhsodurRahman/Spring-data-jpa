@@ -35,4 +35,8 @@ public class Product {
         this.categoryName = categoryName;
         this.name = name;
     }
+
+    public Product(long id) {
+        this.id = id;
+    }
 }
